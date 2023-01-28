@@ -11,5 +11,5 @@ urlpatterns = [
     path('logout/', views.logout, name='Logout Request'),
     path('accounts/', include('allauth.urls')),
     # path('accounts/', include("django.contrib.auth")),
-    # path('social/',include ('social.urls')),
+    path('social/',include ('social.urls')),
 ]
