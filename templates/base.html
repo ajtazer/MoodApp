@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <title>{% block title %}{% endblock title %}</title>
+</head>
+<body>
+    <main class="container">
+        <img class="backgound_img" src="https://cdn-icons-png.flaticon.com/512/1384/1384075.png" alt="" />
+        <div class="content">
+          <img src="https://cdn-icons-png.flaticon.com/512/5030/5030354.png" alt="" class="close_btn" />
+          <a class="twitter_logo" href='/'><img src="https://cdn-icons-png.flaticon.com/512/1384/1384075.png" alt="" class="twitter_logo" /></a>
+          {% block form %}{% endblock form %}
+          <p class="project_by">Developed by <span onclick="window.location='https://www.instagram.com/anujrawatazer/'">TAZER</span></p>
+        </main>
+        </div>
+    </html>    
+</body>
+</html>
+

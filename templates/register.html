@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+{% block title %}Sign Up{% endblock title %}
+{% block form %}
+{% if error %}
+<h1 class="main_title">{{error}}</h1>
+{% else %}
+<h1 class="main_title">Sign Up to MoodApp</h1>
+{% endif %}
+<a href="{% provider_login_url 'google' %}"><div class="google_button">
+  <img src="https://cdn-icons-png.flaticon.com/512/1000/1000777.png" alt="" class="google_logo" />
+  <p class="google_text">Sign Up with Google</p>
+</div></a>
+<div class="or">
+  <hr />
+  <p>or</p>
+  <hr />
+</div>
+<form method="post">{% csrf_token %}
+<input type="text" maxlength="40" name='username' placeholder="Username" class="other_user" />
+<input type="password" maxlength="40" name='password1' placeholder="Password" class="other_user" />
+<input type="password" maxlength="40" name='password2' placeholder="Repeat Password" class="other_user" />
+<button class="next_btn" type='submit'>Sign up</button>
+</form>
+<a href="mailto:tazeryeah@gmail.com?subject=I%20want%20to%20reset%20my%20Password%20for%20MoodApp&body=my%20Username%20is%20%3A%20%0Amy%20Email%20is%20%3A%20">
+  <p class="forgot_pwd">Forgot Password?</p>
+</a>
+<p class="sign_up">Already have an account? <a href='/signin'><span>Log in</span></a></p>
+{% endblock form %}

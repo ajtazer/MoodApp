@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Tazed Home{% endblock title %}
+{% block form %}
+{% if user.is_authenticated %}
+<h1 class="main_title">Hello {{user.username}}</h1>
+<a href="{% url 'Logout Request' %}">Logout</a>
+{% else %}
+<a  href="{% url 'Login Page' %}"><h1 class="main_title">Not Logged in</br>Click to Log In</h1></a>
+{% endif %}
+{% endblock form %}
