@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from django.conf import settings
 
 
 urlpatterns = [
@@ -13,3 +14,4 @@ urlpatterns = [
     # path('accounts/', include("django.contrib.auth")),
     path('social/',include ('social.urls')),
 ]
+admin.site.site_header = settings.ADMIN_SITE_HEADER
