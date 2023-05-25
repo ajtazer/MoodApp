@@ -1,0 +1,2 @@
+misc commit details:
+changed the static file provider to whitenoise, added a vercel json config file and fixed static in production and added gitignore
