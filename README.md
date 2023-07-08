@@ -1,40 +1,54 @@
-# MoodAppv2
+# MoodNotes
 
-MoodNotes is a Python Django web application that aims to provide a platform for users to express and share their mood through written notes, inspired by Instagram's Notes feature. The application is currently in development, with the login and registration models already implemented using the Django framework.
+MoodNotes is a Python Django web application that allows users to express and share their mood through written notes.
 
-With MoodNotes, users can create an account, log in securely, and start capturing their emotions by writing personalized notes. Whether it's a joyful moment, a thought-provoking reflection, or a simple expression of one's state of mind, MoodNotes allows users to document their moods in a convenient and organized manner.
+## Features
 
-Although the initial features are limited to user authentication, the development of MoodNotes is ongoing, and exciting new functionalities are planned for future releases. The roadmap includes features such as creating, editing, and deleting notes, adding tags and categories for better organization, integrating user profiles, and incorporating social sharing options to enhance the user experience.
+* User registration and login
+* Secure authentication and password management
+* Capturing and storing mood-related notes
+* Planned features include note creation, editing, and deletion, tags and categories, user profiles, and social sharing options
 
-Previously hosted on PythonAnywhere, the repository now seeks alternative hosting options due to the expiration of the free trial. The repository serves as a collaborative space for developers to contribute to the project, assisting in the development of additional features, bug fixes, and improvements.
+## Technologies
 
-Contributors interested in web development, Python, Django, and frontend technologies are encouraged to join the MoodNotes project. By collaborating together, we can shape MoodNotes into a robust and user-friendly application that empowers individuals to express their emotions creatively and connect with others who resonate with their moods.
+* Python Django Framework
+* HTML/CSS
+* JavaScript (for frontend interactivity)
+* SQLite (development database)
 
-Join us on this exciting journey of building MoodNotes and let's create a platform where emotions find their voice!
+## Deployment Status
 
-## Key Features:
+The MoodNotes application is currently hosted on PythonAnywhere using the free trial. However, as the trial has expired, alternative hosting options are being explored for future deployment.
 
-User registration and login functionality
-Secure authentication and password management
-Capturing and storing mood-related notes
-Planned features include note creation, editing, and deletion, tags and categories, user profiles, and social sharing options
-## Technologies:
+## Contributing
 
-Python Django Framework
-HTML/CSS
-JavaScript (for frontend interactivity)
-SQLite (development database)
-## Deployment Status:
-The MoodNotes application was previously hosted on PythonAnywhere using the free trial. However, as the trial has expired, alternative hosting options are being explored for future deployment.
-
-## Contributing:
 Contributions to MoodNotes are welcomed! If you are interested in collaborating on this project, please fork the repository and submit your pull requests with any enhancements or bug fixes. Let's work together to make MoodNotes an exceptional mood-sharing platform.
 
-## License:
+## License
+
 The MoodNotes project is licensed under the MIT License. Feel free to use, modify, and distribute the codebase as permitted by the license.
 
-Start sharing your moods and expressing yourself with MoodNotes!
+## Get Started
 
+To get started with MoodNotes, you can follow these steps:
 
-<img width="718" alt="image" src="https://user-images.githubusercontent.com/37796611/215271186-48cf24bd-a841-4505-a8a4-351623102b00.png">
-Login System For Now Only
+1. Clone the repository from GitHub.
+2. Install the dependencies using `pip install -r requirements.txt`.
+3. Create a virtual environment and activate it.
+4. Run the development server using `python manage.py runserver`.
+5. Visit the application in your browser at `http://localhost:8000`.
+
+## Roadmap
+
+The following features are planned for future releases of MoodNotes:
+
+* Note creation, editing, and deletion
+* Tags and categories for better organization
+* User profiles
+* Social sharing options
+
+We are also open to suggestions for new features. If you have any ideas, please feel free to open an issue or submit a pull request.
+
+## Thank you for your interest in MoodNotes!
+
+We hope you enjoy using the application. If you have any questions or feedback, please feel free to contact us.
