@@ -1,3 +1,28 @@
-MoodApp/__pycache__/
-social/__pycache__/
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+
+# Static files
+staticfiles/
+static/
+
+# Media files
+media/
+
+# Social migrations
 social/migrations/__pycache__/
+
+# IDE
+.vscode/
+
+# Other
+__pycache__/
+*.pyo
+*.swp
+*.swo
+*.bak
+*.pyc
+.DS_Store

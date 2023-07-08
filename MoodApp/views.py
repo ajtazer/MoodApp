@@ -9,16 +9,17 @@ def signup(request):
     if request.method == "POST":
         if request.POST['password1'] == request.POST['password2']:
             try:
-                User.objects.get(username = request.POST['username'])
-                return render (request,'register.html', {'error':'Username is already taken!'})
+                User.objects.get(username=request.POST['username'])
+                return render(request, 'register.html', {'error': 'Username is already taken!'})
             except User.DoesNotExist:
-                user = User.objects.create_user(username=request.POST['username'],password=request.POST['password1'])
-                auth.login(request,user)
+                user = User.objects.create_user(username=request.POST['username'], password=request.POST['password1'])
+                user.backend = 'django.contrib.auth.backends.ModelBackend'  # Set the backend attribute
+                auth.login(request, user)
                 return redirect('/')
         else:
-            return render (request,'register.html', {'error':'Password does not match!'})
+            return render(request, 'register.html', {'error': 'Password does not match!'})
     else:
-        return render(request,'register.html')
+        return render(request, 'register.html')
 
 def signin(request):
     if request.method == 'POST':
