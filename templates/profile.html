@@ -1,0 +1,6 @@
+{% block content %}
+  <h1>Welcome, {{ user.username | upper }}!</h1>
+  <h1>Bio: {{ user.profile.bio }}</h1>
+  
+    <img src="{{ user.profile.photo.url }}" alt="Profile Photo">
+{% endblock %}

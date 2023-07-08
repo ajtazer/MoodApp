@@ -9,6 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='Home Page'),
     path('signin/', views.signin, name='Login Page'),
+    path('profile/', views.profile, name='profile'),
     path('signup/', views.signup, name='Register Page'),
     path('logout/', views.logout, name='Logout Request'),
     path('accounts/', include('allauth.urls')),
