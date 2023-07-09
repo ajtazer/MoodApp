@@ -2,10 +2,10 @@
   "version": 2,
   "builds": [
       {
-          "src": "backend/wsgi.py",
+          "src": "MoodApp/wsgi.py",
           "use": "@vercel/python",
           "config": {
-              "maxLambdaSize": "15mb",
+              "maxLambdaSize": "30mb",
               "runtime": "python3.9"
           }
       },
