@@ -1,8 +1,8 @@
-django
-django-allauth==0.54.0
-psycopg2-binary==2.7.7
-python-dotenv==1.0.0
+asgiref==3.5.2
 dj-database-url==1.0.0
+Django==3.2.16
+django-allauth==0.54.0
+psycopg2-binary==2.9.5
 python-decouple==3.6
-psycopg2-binary==2.9.6
-psycopg2==2.7.7
+pytz==2022.5
+sqlparse==0.4.3
