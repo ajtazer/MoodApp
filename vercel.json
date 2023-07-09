@@ -1,25 +1,31 @@
 {
-	"builds": [
-		{
-		"src": "MoodApp/wsgi.py",
-		"use": "@vercel/python",
-		"config": {"maxLambdaSize": "50mb", "runtime": "python3.9"}
-	},
-	{
-		"src": "build.sh",
-		"use": "@vercel/static-build",
-		"config":{
-			"distDir": "staticfiles"
-		}
-	}],
-	"routes": [
-		{
-		  "src": "/static/(.*)",
-		  "dest": "/static/$1"
-		},
-		{
-		  "src": "/(.*)",
-		  "dest": "MoodApp/wsgi.py"
-		}
-	  ]
-	}
+    "version": 2,
+    "builds": [
+        {
+            "src": "MoodApp/wsgi.py",
+            "use": "@vercel/python",
+            "config": {
+                "maxLambdaSize": "40mb",
+                "runtime": "python3.9"
+            }
+        },
+        {
+            "src": "build.sh",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "staticfiles_build"
+            }
+        }
+    ],
+    "routes": [
+        {
+            "src": "/static/(.*)",
+            "dest": "/static/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "MoodApp/wsgi.py"
+        }
+    ]
+
+}
