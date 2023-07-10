@@ -3,6 +3,8 @@ import random
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+from allauth.socialaccount.models import SocialAccount
+
 
 def get_random_joke():
     jokes = [
@@ -40,7 +42,7 @@ def get_random_joke():
     ]
     return random.choice(jokes)
 
-random_photo = random.choice(os.listdir('media/dp/'))
+random_photo = random.choice(os.listdir('media/'))
 class SocialProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     bio = models.TextField(blank=True, default=get_random_joke())

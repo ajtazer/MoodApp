@@ -1,6 +1,7 @@
 import os
 import random
 from social.models import SocialProfile
+from social.models import get_random_joke
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -20,15 +21,16 @@ def signup(request):
             except User.DoesNotExist:
                 user = User.objects.create_user(username=request.POST['username'], password=request.POST['password1'])
                 user.backend = 'django.contrib.auth.backends.ModelBackend'
-                # user.photo = 'default.jpg'
-                # user.bio = ''
-                user.save()
+                social_profile = SocialProfile(user=user)
+                social_profile.save()
                 auth.login(request, user)
                 return redirect('/')
         else:
             return render(request, 'register.html', {'error': 'Passwords do not match!'})
     else:
         return render(request, 'register.html')
+
+
 
 
 def signin(request):
@@ -49,12 +51,19 @@ def logout(request):
     else:
         return HttpResponse('<h1>SOMETHING WENT WRONG, TAZER BLIND SPOT HAHA U WIN</h1>')
     
-
-
 @login_required
 def profile(request):
     user = request.user
-    context = {
-        'user': user,
-    }
-    return render(request, 'profile.html', context)
+    data=SocialAccount.objects.filter(provider='google').filter(user=user)
+    social_profile = SocialProfile.objects.filter(user=user)
+    if data:
+        picture = data[0].extra_data['picture']
+        name = data[0].extra_data['name']
+        bio = get_random_joke()
+    else:
+        if social_profile:
+            picture = social_profile[0].photo.url
+            name = social_profile[0].user.username
+            bio = social_profile[0].bio
+
+    return render(request, 'profile.html',{'bio':bio, 'name': name, 'picture': picture})

@@ -3,8 +3,11 @@
 {% block form %}
 {% if user.is_authenticated %}
 <h1 class="main_title">Hello {{user.username}}</h1>
-<a href="{% url 'profile' %}">Profile</a>
-<a href="{% url 'Logout Request' %}">Logout</a>
+<br>
+<button class="next_btn" type='submit' onclick="window.location.href = '{% url 'profile' %}';">Profile</button>
+<br>
+<button class="next_btn" type='submit' onclick="window.location.href = '{% url 'Logout Request' %}';">Logout</button>
+<br>
 {% else %}
 <a  href="{% url 'Login Page' %}"><h1 class="main_title">Not Logged in</br>Click to Log In</h1></a>
 {% endif %}
