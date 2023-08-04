@@ -49,3 +49,14 @@ class SocialProfile(models.Model):
     photo = models.ImageField(blank=True, default=random_photo)
     def __str__(self):
         return self.user.username
+
+class Post(models.Model):
+    id=models.UUIDField(primary_key=True, default=uuid.uuid4)
+    user=models.CharField(max_length=100)
+    image=models.ImageField(upload_to="posts")
+    caption=models.TextField()
+    created=models.DateTimeField(default=datetime.now())
+    likes=models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.caption
