@@ -4,6 +4,8 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 from allauth.socialaccount.models import SocialAccount
+import uuid
+from datetime import datetime
 
 
 def get_random_joke():
