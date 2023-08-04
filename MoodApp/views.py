@@ -1,6 +1,6 @@
 import os
 import random
-from social.models import SocialProfile
+from social.models import SocialProfile, Post
 from social.models import get_random_joke
 from django.contrib import auth
 from django.contrib.auth.models import User
@@ -8,6 +8,25 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
 from allauth.socialaccount.models import SocialAccount
 
+def feed(request):
+    posts = Post.objects.all()
+    # user_object = User.objects.get(username=request.user.username)
+    # user_profile = SocialProfile.objects.get(user=user_object)
+    
+    return render(request, 'feed.html')
+
+@login_required()
+def upload(request):
+    if request.method=="POST":
+        user=request.user.username
+        img=request.FILES.get("images")
+        caption=request.POST['caption']
+
+        new_post=Post.objects.create(user=user, image=img, caption=caption)
+        new_post.save()
+        return redirect("/")
+    else:
+        return HttpResponse("<h1>File Uploaded EASTER EGG Lesgo</h1>")
 
 def index(request):
     return render(request, 'home.html')
