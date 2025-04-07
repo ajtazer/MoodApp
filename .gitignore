@@ -16,3 +16,11 @@ __pycache__/
 .DS_Store
 *.sqlite3
 .vercel
+node_modules
+*.env
+*.sql
+*.sqlite3
+*.sqlite
+/bin
+/lib
+/.wrangler

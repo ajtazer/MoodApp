@@ -1,1 +1,404 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <title>Feed</title>
+    <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/1384/1384075.png">
+    <style>
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .post-card {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #28f19c;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .post-card:hover {
+            border-color: #04a5f4;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(40, 241, 156, 0.2);
+        }
+        
+        .post-card.creator {
+            border: 2px solid gold;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        .post-card.creator:hover {
+            border-color: gold;
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .post-header {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .post-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid #04a5f4;
+            margin-right: 15px;
+        }
+        
+        .post-avatar.creator {
+            border: 2px solid gold;
+            box-shadow: 0 0 10px gold;
+        }
+
+        .post-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .post-user {
+            flex-grow: 1;
+        }
+
+        .post-username {
+            color: #28f19c;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .post-username.creator {
+            color: gold;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+        
+        .creator-badge {
+            display: inline-block;
+            background-color: gold;
+            color: black;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-left: 10px;
+        }
+
+        .post-time {
+            color: #a1a1a1;
+            font-size: 14px;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 500px;
+            overflow: hidden;
+        }
+
+        .post-image img {
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .post-content {
+            padding: 20px;
+        }
+
+        .post-caption {
+            color: #d0d0d0;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px 20px;
+        }
+
+        .post-like {
+            display: flex;
+            align-items: center;
+            color: #d0d0d0;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.2s ease, transform 0.2s ease;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        
+        .post-like:hover {
+            transform: scale(1.1);
+        }
+
+        .post-like.active {
+            color: #ff4b4b;
+        }
+        
+        .post-like.active:hover {
+            color: #ff7b7b;
+        }
+
+        .like-count {
+            margin-left: 5px;
+        }
+        
+        .post-comment-link {
+            display: flex;
+            align-items: center;
+            color: #04a5f4;
+            font-size: 16px;
+            text-decoration: none;
+            transition: color 0.2s ease, transform 0.2s ease;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        
+        .post-comment-link:hover {
+            color: #28f19c;
+            transform: scale(1.1);
+        }
+        
+        .comment-icon {
+            margin-right: 5px;
+        }
+
+        .page-title {
+            color: #04a5f4;
+            font-size: 36px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .nav-button {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid #04a5f4;
+            border-radius: 30px;
+            color: #d0d0d0;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-button:hover {
+            border-color: #28f19c;
+            color: #28f19c;
+        }
+
+        .empty-state {
+            color: #a1a1a1;
+            font-size: 18px;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .create-post {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #28f19c;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        .create-post-title {
+            color: #28f19c;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .create-post-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-textarea {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #04a5f4;
+            border-radius: 10px;
+            padding: 15px;
+            color: #d0d0d0;
+            font-size: 16px;
+            margin-bottom: 15px;
+            resize: none;
+            height: 100px;
+        }
+
+        .post-textarea::placeholder {
+            color: #a1a1a1;
+        }
+
+        .post-file-input {
+            margin-bottom: 15px;
+        }
+
+        .post-submit {
+            background: transparent;
+            border: 1px solid #04a5f4;
+            border-radius: 30px;
+            color: #d0d0d0;
+            font-size: 16px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .post-submit:hover {
+            border-color: #28f19c;
+            color: #28f19c;
+            background-color: rgba(40, 241, 156, 0.1);
+        }
+
+        .post-username.creator-username {
+            color: gold;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .creator-tag {
+            color: gold;
+            font-weight: bold;
+            font-size: 10px;
+            vertical-align: super;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <img class="backgound_img" src="https://cdn-icons-png.flaticon.com/512/1384/1384075.png" alt="" />
+        <div class="content" style="height: auto; min-height: 700px; overflow-y: auto; padding: 20px 0;">
+            <a class="twitter_logo" href='/'><img src="https://cdn-icons-png.flaticon.com/512/1384/1384075.png" alt="" class="twitter_logo" /></a>
+            
+            <div class="feed-container">
+                <h1 class="page-title">Feed</h1>
+                
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="window.location.href='/'">Home</button>
+                    <button class="nav-button" onclick="window.location.href='/profile/'">My Profile</button>
+                    <button class="nav-button" onclick="window.location.href='/explore/'">Explore</button>
+                </div>
+                
+                <div class="create-post">
+                    <h2 class="create-post-title">Create a New Post</h2>
+                    <form action="/upload/" method="POST" enctype="multipart/form-data" class="create-post-form">
+                        {% csrf_token %}
+                        <textarea name="caption" placeholder="What's your mood today?" class="post-textarea" required></textarea>
+                        <input type="file" name="images" accept="image/*" class="post-file-input" required>
+                        <button type="submit" class="post-submit">Post</button>
+                    </form>
+                </div>
+                
+                {% if posts %}
+                    {% for post in posts %}
+                    <div class="post-card" id="post-{{ post.id }}">
+                        <div class="post-header">
+                            <div class="post-avatar">
+                                <!-- TODO: Fetch user avatar dynamically -->
+                                <img src="https://cdn-icons-png.flaticon.com/512/1384/1384075.png" alt="{{ post.user }}'s avatar">
+                            </div>
+                            <div class="post-user">
+                                <!-- Highlight creator name -->
+                                <div class="post-username {% if post.user == 'tazer' %}creator-username{% endif %}">
+                                    @{{ post.user }}
+                                    {% if post.user == 'tazer' %}<span class="creator-tag">CREATOR</span>{% endif %}
+                                </div>
+                                <div class="post-time">{{ post.created|date:"F j, Y" }}</div>
+                            </div>
+                        </div>
+                        <div class="post-image">
+                            <img src="{{ post.image.url }}" alt="Post Image">
+                        </div>
+                        <div class="post-content">
+                            <div class="post-caption">{{ post.caption }}</div>
+                        </div>
+                        <div class="post-actions">
+                            <a href="{% url 'Like Post' post.id %}" class="post-like {% if post.user_has_liked %}active{% endif %}" data-post-id="{{ post.id }}">
+                                ❤️ <span class="like-count">{{ post.likes }}</span>
+                            </a>
+                            <a href="{% url 'Post Detail' post.id %}" class="post-comment-link">
+                                <span class="comment-icon">💬</span> Comment
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">No posts yet. Be the first to share your mood!</div>
+                {% endif %}
+            </div>
+            
+            <p class="project_by">Developed by <span onclick="window.location='https://www.instagram.com/anujrawatazer/'">TAZER</span></p>
+        </div>
+    </main>
+    
+    <script>
+        // JavaScript for handling like functionality with AJAX
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.post-like').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const url = this.getAttribute('href');
+                    const postId = this.getAttribute('data-post-id');
+                    const likeButton = this; // Reference to the clicked button
+                    const likeCountSpan = this.querySelector('.like-count');
+                    
+                    fetch(url, {
+                        method: 'GET', // Using GET for simplicity, POST is often preferred for actions
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token if using POST
+                        }
+                    })
+                    .then(response => {
+                         if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Update like count
+                        likeCountSpan.textContent = data.likes;
+                        
+                        // Toggle active class based on action
+                        if (data.action === 'liked') {
+                            likeButton.classList.add('active');
+                        } else {
+                            likeButton.classList.remove('active');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error liking post:', error);
+                        // Optionally, display an error message to the user
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

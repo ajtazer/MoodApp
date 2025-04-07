@@ -25,6 +25,13 @@
             letter-spacing: 2px;
             text-align: center;
         }
+        .text-center-name.creator {
+            color: gold;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 2px black; /* Optional: add shadow for better visibility */
+        }
         .rounded-circle {
             border-radius: 50%;
             overflow: hidden;
@@ -34,6 +41,13 @@
             border: 3px solid #28f19c;
             cursor: pointer;
             }
+        .creator-tag {
+            color: gold;
+            font-weight: bold;
+            margin-left: 10px;
+            font-size: 12px;
+            vertical-align: super;
+        }
     </style>
 </head>
 <body>
@@ -42,7 +56,7 @@
     <div class="content">
         {% for x in social_profile %}
         {% if user == x.user %}
-        <h1 class="text-center-name">Welcome, {{ x.user | upper }}!</h1>
+        <h1 class="text-center-name {% if is_creator %}creator{% endif %}">Welcome, {{ x.user | upper }}{% if is_creator %}<span class="creator-tag">CREATOR</span>{% endif %}!</h1>
         <br><br>
         <img src="{{ x.photo.url }}" alt="Profile Photo" class="rounded-circle mx-auto d-block" style="max-width: 300px;">
         <br><br>
@@ -52,9 +66,9 @@
         
         {% if social_profile %}
         {% else %}
-        <h1 class="text-center-name">Welcome, {{ name | upper }}!</h1>
+        <h1 class="text-center-name {% if is_creator %}creator{% endif %}">Welcome, {{ name | upper }}{% if is_creator %}<span class="creator-tag">CREATOR</span>{% endif %}!</h1>
         <br><br>
-        <img src="{{ picture }}" alt="Profile Photo" class="rounded-circle mx-auto d-block" style="max-width: 300px;">
+        <img src="{% if picture %}{{ picture }}{% else %}https://cdn-icons-png.flaticon.com/512/1384/1384075.png{% endif %}" alt="Profile Photo" class="rounded-circle mx-auto d-block" style="max-width: 300px;">
         <br>
         <button class="next_btn" type='submit' onclick="window.location.href = '/';">Home</button>
         <br>

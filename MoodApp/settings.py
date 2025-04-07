@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-w0^o9*&%6^rr-9@q9h_2yyp+x(-y!9jtnwsa(i&l%vqddy-cm6'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG_FLAG')
+DEBUG = True if os.environ.get('DEBUG_FLAG', 'True') == 'True' else False
 
 ALLOWED_HOSTS = ['*']
 
@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'storages',  # Add django-storages
 ]
 
 MIDDLEWARE = [
@@ -74,74 +75,41 @@ import dotenv
 
 dotenv.load_dotenv()
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DATABASE'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('POSTGRES_HOST'),
-        'PORT': '5432',
+# Check if running on Vercel
+IS_VERCEL = os.environ.get('VERCEL', False)
+
+if IS_VERCEL:
+    # Cloudflare D1 configuration
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django_cloudflare_d1',
+            'NAME': os.environ.get('CLOUDFLARE_D1_DATABASE_ID'), # D1 Database ID
+            'ACCOUNT_ID': os.environ.get('CLOUDFLARE_ACCOUNT_ID'), # Cloudflare Account ID
+            'API_TOKEN': os.environ.get('CLOUDFLARE_D1_API_TOKEN'), # D1 API Token
+        }
     }
-}
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# DATABASES['default'] = dj_database_url.config()
-
-
-# Password validation
-# https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.0/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
-USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.0/howto/static-files/
-STATIC_URL = 'static/'
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
-
-
-# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-# STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
-# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-# STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    # Vercel Blob Storage configuration
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    AWS_ACCESS_KEY_ID = os.environ.get('VERCEL_BLOB_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('VERCEL_BLOB_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = os.environ.get('VERCEL_BLOB_BUCKET_NAME')
+    AWS_S3_ENDPOINT_URL = os.environ.get('VERCEL_BLOB_ENDPOINT_URL')
+    AWS_S3_REGION_NAME = 'auto'
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_DEFAULT_ACL = 'public-read'
+    AWS_LOCATION = 'media'
+    MEDIA_URL = os.environ.get('VERCEL_BLOB_MEDIA_URL', f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/{AWS_LOCATION}/')
+else:
+    # Local SQLite configuration
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+    # Local media files configuration
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -169,3 +137,36 @@ AUTHENTICATION_BACKENDS = (
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 SOCIALACCOUNT_LOGIN_ON_GET=True
 ADMIN_SITE_HEADER = "Tazed Admin Block, Dont Even try udk the password, fuck u go away!!!!"
+
+# Internationalization
+# https://docs.djangoproject.com/en/4.0/topics/i18n/
+
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'UTC'
+
+USE_I18N = True
+
+USE_TZ = True
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.2/howto/static-files/
+STATIC_URL = '/static/' # REQUIRED SETTING
+STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+# Ensure this is placed before the Media storage configuration block
+
+# Media storage configuration
+if IS_VERCEL:
+    # Vercel Blob Storage Configuration
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    # ... (rest of Vercel media config)
+else:
+    # Local media files configuration
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Default primary key field type
+# ... (rest of settings)

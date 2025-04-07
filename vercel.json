@@ -23,9 +23,20 @@
             "dest": "/static/$1"
         },
         {
+            "src": "/media/(.*)",
+            "dest": "/media/$1"
+        },
+        {
+            "src": "/admin/(.*)",
+            "dest": "MoodApp/wsgi.py"
+        },
+        {
             "src": "/(.*)",
             "dest": "MoodApp/wsgi.py"
         }
-    ]
-
+    ],
+    "env": {
+        "VERCEL": "1",
+        "DJANGO_SETTINGS_MODULE": "MoodApp.settings"
+    }
 }
