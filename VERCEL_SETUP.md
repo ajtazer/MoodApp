@@ -14,11 +14,6 @@ This guide will help you set up your MoodNotes application for deployment on Ver
 
 Set up the following environment variables in your Vercel project settings:
 
-### Cloudflare D1 Configuration
-- `CLOUDFLARE_D1_DATABASE_ID` - Your D1 database ID
-- `CLOUDFLARE_ACCOUNT_ID` - Your Cloudflare Account ID
-- `CLOUDFLARE_D1_API_TOKEN` - Your Cloudflare API Token with D1 permissions
-
 ### Vercel Blob Storage Configuration
 - `VERCEL_BLOB_ACCESS_KEY_ID` - Your Vercel Blob Storage access key ID
 - `VERCEL_BLOB_SECRET_ACCESS_KEY` - Your Vercel Blob Storage secret access key

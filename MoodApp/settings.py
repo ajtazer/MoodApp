@@ -78,38 +78,21 @@ dotenv.load_dotenv()
 # Check if running on Vercel
 IS_VERCEL = os.environ.get('VERCEL', False)
 
-if IS_VERCEL:
-    # Cloudflare D1 configuration
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django_cloudflare_d1',
-            'NAME': os.environ.get('CLOUDFLARE_D1_DATABASE_ID'), # D1 Database ID
-            'ACCOUNT_ID': os.environ.get('CLOUDFLARE_ACCOUNT_ID'), # Cloudflare Account ID
-            'API_TOKEN': os.environ.get('CLOUDFLARE_D1_API_TOKEN'), # D1 API Token
-        }
+# Update to use Vercel Postgres or your preferred database
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DATABASE'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'PORT': '5432',
     }
-    # Vercel Blob Storage configuration
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    AWS_ACCESS_KEY_ID = os.environ.get('VERCEL_BLOB_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = os.environ.get('VERCEL_BLOB_SECRET_ACCESS_KEY')
-    AWS_STORAGE_BUCKET_NAME = os.environ.get('VERCEL_BLOB_BUCKET_NAME')
-    AWS_S3_ENDPOINT_URL = os.environ.get('VERCEL_BLOB_ENDPOINT_URL')
-    AWS_S3_REGION_NAME = 'auto'
-    AWS_S3_FILE_OVERWRITE = False
-    AWS_DEFAULT_ACL = 'public-read'
-    AWS_LOCATION = 'media'
-    MEDIA_URL = os.environ.get('VERCEL_BLOB_MEDIA_URL', f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/{AWS_LOCATION}/')
-else:
-    # Local SQLite configuration
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-    # Local media files configuration
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+}
+
+# Local media files configuration
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -159,14 +142,8 @@ STATICFILES_DIRS = [
 # Ensure this is placed before the Media storage configuration block
 
 # Media storage configuration
-if IS_VERCEL:
-    # Vercel Blob Storage Configuration
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    # ... (rest of Vercel media config)
-else:
-    # Local media files configuration
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # ... (rest of settings)
