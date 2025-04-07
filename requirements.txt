@@ -11,4 +11,3 @@ python-dotenv
 django-storages==1.14.2
 boto3==1.28.15
 gunicorn==21.2.0
-django-cloudflare-d1==0.1.2
