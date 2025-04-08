@@ -7,7 +7,7 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <title>Explore Users</title>
-    <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/1384/1384075.png">
+    <link rel="icon" type="image/x-icon" href="{% static '404.gif' %}">
     <style>
         .explore-container {
             display: flex;
@@ -150,9 +150,9 @@
 </head>
 <body>
     <main class="container">
-        <img class="backgound_img" src="https://cdn-icons-png.flaticon.com/512/1384/1384075.png" alt="" />
+        <img class="backgound_img" src="{% static '404.gif' %}" alt="" />
         <div class="content" style="height: auto; min-height: 700px; overflow-y: auto; padding: 20px 0;">
-            <a class="twitter_logo" href='/'><img src="https://cdn-icons-png.flaticon.com/512/1384/1384075.png" alt="" class="twitter_logo" /></a>
+            <a class="twitter_logo" href='/'><img src="{% static '404.gif' %}" alt="" class="twitter_logo" /></a>
             
             <div class="explore-container">
                 <h1 class="page-title">Explore Users</h1>
@@ -167,7 +167,7 @@
                     {% for profile in user_profiles %}
                         <div class="user-card {% if profile.is_creator %}creator{% endif %}">
                             <div class="user-avatar {% if profile.is_creator %}creator{% endif %}">
-                                <img src="{% if profile.picture %}{{ profile.picture }}{% else %}https://cdn-icons-png.flaticon.com/512/1384/1384075.png{% endif %}" alt="{{ profile.name }}'s avatar">
+                                <img src="{% if profile.picture %}{{ profile.picture }}{% else %}{{ MEDIA_URL }}naruto.jpg{% endif %}" alt="{{ profile.name }}'s avatar">
                             </div>
                             <div class="user-info">
                                 <div class="user-name {% if profile.is_creator %}creator{% endif %}">

@@ -10,7 +10,6 @@ from datetime import datetime
 
 # Define the media directory path relative to the base directory
 MEDIA_DIR = os.path.join(settings.BASE_DIR, 'media')
-PROFILES_DIR = os.path.join(MEDIA_DIR, 'profiles') # Define profiles subdir
 
 def get_random_joke():
     jokes = [
@@ -49,31 +48,59 @@ def get_random_joke():
     return random.choice(jokes)
 
 def get_default_profile_photo():
-    """Selects a random photo from the media/profiles directory."""
+    """Selects a random anime character photo from the media directory."""
     try:
-        # Ensure the profiles directory exists
-        if not os.path.exists(PROFILES_DIR):
-            os.makedirs(PROFILES_DIR)
+        # Look for image files directly in the media directory
+        # Filter for common image extensions
+        image_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+        image_files = []
         
-        # Look for images directly within the 'profiles' subdirectory
-        image_files = [f for f in os.listdir(PROFILES_DIR) if os.path.isfile(os.path.join(PROFILES_DIR, f))]
+        print(f"Looking for images in: {MEDIA_DIR}")
+        
+        for f in os.listdir(MEDIA_DIR):
+            # Skip the 'posts' directory and any other directories
+            if os.path.isdir(os.path.join(MEDIA_DIR, f)):
+                print(f"Skipping directory: {f}")
+                continue
+                
+            # Check if the file has an image extension
+            if any(f.lower().endswith(ext) for ext in image_extensions):
+                image_files.append(f)
+                print(f"Found image file: {f}")
+                
+        print(f"Total image files found: {len(image_files)}")
+                
         if image_files:
-            # Return path relative to MEDIA_ROOT (e.g., 'profiles/random_image.jpg')
-            return os.path.join('profiles', random.choice(image_files)) 
+            # Return the filename only - Django will look for it in MEDIA_ROOT
+            selected_image = random.choice(image_files)
+            print(f"Selected random profile image: {selected_image}")
+            return selected_image
     except Exception as e:
         print(f"Error selecting random default photo: {e}")
-    # Fallback to a known default or None
-    # return 'profiles/default_avatar.png' # Example: if you add a default image
+    
+    # Fallback to None if no images found
+    print("No images found, returning None")
     return None
 
 class SocialProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     bio = models.TextField(blank=True, default=get_random_joke)
-    # Use upload_to='profiles/' - Django handles creating MEDIA_ROOT/profiles/
+    # Changed to use the anime character images from media directory
     photo = models.ImageField(upload_to='profiles/', blank=True, null=True, default=get_default_profile_photo)
     
     def __str__(self):
         return self.user.username
+    
+    def save(self, *args, **kwargs):
+        # If this is a new profile and no photo is set, assign a random anime character
+        if not self.pk and not self.photo:
+            default_photo = get_default_profile_photo()
+            if default_photo:
+                # We need to handle this differently since we're not using upload_to
+                # Just store the filename, Django will look for it in MEDIA_ROOT
+                self.photo = default_photo
+        
+        super().save(*args, **kwargs)
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)

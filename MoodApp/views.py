@@ -172,6 +172,16 @@ def profile(request):
         name = user.username
     
     # Now get the photo URL from the SocialProfile (might be Google's or the default random one)
+    # If no photo is set, try to set a random anime character image
+    if not social_profile.photo:
+        from social.models import get_default_profile_photo
+        default_photo = get_default_profile_photo()
+        if default_photo:
+            # Save the default photo to the profile
+            social_profile.photo = default_photo
+            social_profile.save()
+            print(f"Set default photo for user {user.username}: {default_photo}")
+    
     picture_url = social_profile.photo.url if social_profile.photo else None
     bio = social_profile.bio
     
@@ -179,8 +189,8 @@ def profile(request):
     is_creator = (user.username == 'tazer') # Assuming 'tazer' is the admin username
 
     return render(request, 'profile.html', {
-        'bio': bio, 
-        'name': name, 
+        'bio': bio,
+        'name': name,
         'picture': picture_url,
         'is_creator': is_creator
     })
@@ -195,6 +205,16 @@ def explore(request):
             # Ensure profile exists
             social_profile, _ = SocialProfile.objects.get_or_create(user=user)
             
+            # If no photo is set, try to set a random anime character image
+            if not social_profile.photo:
+                from social.models import get_default_profile_photo
+                default_photo = get_default_profile_photo()
+                if default_photo:
+                    # Save the default photo to the profile
+                    social_profile.photo = default_photo
+                    social_profile.save()
+                    print(f"Set default photo for user {user.username} in explore view: {default_photo}")
+            
             # Try to get Google account data if available
             google_data = SocialAccount.objects.filter(provider='google').filter(user=user).first()
             
@@ -204,7 +224,7 @@ def explore(request):
             if google_data:
                 # Prefer Google name if available
                 name = google_data.extra_data.get('name', user.username)
-                # Use Google picture if profile photo is missing
+                # Use Google picture if profile photo is missing and Google has one
                 if not picture_url:
                      picture_url = google_data.extra_data.get('picture')
 

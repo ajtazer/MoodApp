@@ -1,3 +1,4 @@
+
 from pathlib import Path
 import os
 # import dj_database_url
@@ -60,6 +61,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',  # Add this to make MEDIA_URL available in templates
             ],
         },
     },
@@ -79,16 +81,30 @@ dotenv.load_dotenv()
 IS_VERCEL = os.environ.get('VERCEL', False)
 
 # Update to use Vercel Postgres or your preferred database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DATABASE'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('POSTGRES_HOST'),
-        'PORT': '5432',
+# Check if PostgreSQL environment variables are set
+if os.environ.get('POSTGRES_DATABASE') and os.environ.get('POSTGRES_HOST'):
+    # Use PostgreSQL if environment variables are available
+    print("INFO: Using PostgreSQL database configuration")
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('POSTGRES_DATABASE'),
+            'USER': os.environ.get('POSTGRES_USER'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+            'HOST': os.environ.get('POSTGRES_HOST'),
+            'PORT': '5432',
+        }
     }
-}
+else:
+    # Use SQLite as fallback for local development
+    print("INFO: PostgreSQL environment variables not found. Using SQLite as fallback database")
+    print(f"INFO: Database will be created at: {BASE_DIR / 'db.sqlite3'}")
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Local media files configuration
 MEDIA_URL = '/media/'
