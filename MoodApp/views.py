@@ -1,5 +1,6 @@
 import os
 import random
+import requests
 from social.models import SocialProfile, Post, Comment
 from social.models import get_random_joke
 from django.contrib import auth
@@ -10,6 +11,7 @@ from allauth.socialaccount.models import SocialAccount
 from django.http import JsonResponse
 from django.core.files.base import ContentFile
 from django.conf import settings
+import uuid
 
 @login_required
 def feed(request):
@@ -90,14 +92,69 @@ def post_detail(request, post_id):
 
 @login_required()
 def upload(request):
-    if request.method=="POST":
-        user=request.user.username
-        img=request.FILES.get("images")
-        caption=request.POST['caption']
+    if request.method == "POST":
+        user = request.user.username
+        image_file = request.FILES.get("images")
+        caption = request.POST['caption']
 
-        new_post=Post.objects.create(user=user, image=img, caption=caption)
-        new_post.save()
-        return redirect("/")
+        if image_file:
+            try:
+                # Get upload URL from Vercel Blob
+                token = os.environ.get("BLOB_READ_WRITE_TOKEN")
+                if not token:
+                    raise Exception("BLOB_READ_WRITE_TOKEN not found in environment variables")
+
+                headers = {
+                    'Authorization': f'Bearer {token}',
+                    'Content-Type': 'application/json',
+                    'X-Store-ID': '3RM9KZfdJv9BixtY'  # Your store ID
+                }
+                
+                # Generate a unique filename
+                file_extension = os.path.splitext(image_file.name)[1].lower()
+                unique_filename = f"{uuid.uuid4()}{file_extension}"
+                
+                # Get upload URL
+                response = requests.post(
+                    "https://blob.vercel-storage.com/upload",
+                    headers=headers,
+                    json={
+                        'contentType': image_file.content_type,
+                        'pathname': f'posts/{unique_filename}'
+                    }
+                )
+                
+                if response.status_code != 200:
+                    print(f"Upload URL error response: {response.text}")
+                    raise Exception(f"Failed to get upload URL: {response.text}")
+                
+                upload_data = response.json()
+                
+                # Upload file to Vercel Blob
+                files = {'file': (unique_filename, image_file.file, image_file.content_type)}
+                upload_response = requests.put(
+                    upload_data['uploadUrl'],
+                    files=files
+                )
+                    
+                if upload_response.status_code not in [200, 201]:
+                    print(f"File upload error response: {upload_response.text}")
+                    raise Exception(f"Failed to upload file: {upload_response.text}")
+                
+                # Create post with the Vercel Blob URL
+                image_url = f"https://3rm9kzfdjv9bixty.public.blob.vercel-storage.com/posts/{unique_filename}"
+                new_post = Post.objects.create(
+                    user=user,
+                    image=image_url,
+                    caption=caption
+                )
+                new_post.save()
+                return redirect("/")
+            except Exception as e:
+                print(f"Error uploading to Vercel Blob: {str(e)}")
+                return HttpResponse(f"<h1>Error uploading file: {str(e)}</h1>")
+        else:
+            return HttpResponse("<h1>No image file provided</h1>")
     else:
         return HttpResponse("<h1>File Uploaded EASTER EGG Lesgo</h1>")
 
@@ -156,17 +213,11 @@ def profile(request):
         # try to fetch and save the Google picture
         if created and picture and not social_profile.photo:
             try:
-                # Basic image fetching (consider a more robust solution for production)
-                import requests
-                response = requests.get(picture, stream=True)
-                if response.status_code == 200:
-                    # Create a filename (e.g., user_id.jpg)
-                    filename = f"{user.id}.{picture.split('.')[-1].split('?')[0]}"
-                    social_profile.photo.save(filename, ContentFile(response.content), save=True)
-                else:
-                    print(f"Failed to fetch Google profile picture: {response.status_code}")
+                # For Google users, just store their Google photo URL directly
+                social_profile.photo = picture
+                social_profile.save()
             except Exception as e:
-                print(f"Error fetching/saving Google picture: {e}")
+                print(f"Error saving Google picture URL: {e}")
     else:
         # For non-Google or direct sign-up users
         name = user.username
@@ -177,12 +228,12 @@ def profile(request):
         from social.models import get_default_profile_photo
         default_photo = get_default_profile_photo()
         if default_photo:
-            # Save the default photo to the profile
+            # Save the default photo URL to the profile
             social_profile.photo = default_photo
             social_profile.save()
             print(f"Set default photo for user {user.username}: {default_photo}")
     
-    picture_url = social_profile.photo.url if social_profile.photo else None
+    picture_url = social_profile.photo if social_profile.photo else None
     bio = social_profile.bio
     
     # Add creator highlight logic
@@ -210,7 +261,7 @@ def explore(request):
                 from social.models import get_default_profile_photo
                 default_photo = get_default_profile_photo()
                 if default_photo:
-                    # Save the default photo to the profile
+                    # Save the default photo URL to the profile
                     social_profile.photo = default_photo
                     social_profile.save()
                     print(f"Set default photo for user {user.username} in explore view: {default_photo}")
@@ -218,7 +269,7 @@ def explore(request):
             # Try to get Google account data if available
             google_data = SocialAccount.objects.filter(provider='google').filter(user=user).first()
             
-            picture_url = social_profile.photo.url if social_profile.photo else None
+            picture_url = social_profile.photo if social_profile.photo else None
             name = user.username
 
             if google_data:

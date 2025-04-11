@@ -48,45 +48,19 @@ def get_random_joke():
     return random.choice(jokes)
 
 def get_default_profile_photo():
-    """Selects a random anime character photo from the media directory."""
-    try:
-        # Look for image files directly in the media directory
-        # Filter for common image extensions
-        image_extensions = ['.jpg', '.jpeg', '.png', '.gif']
-        image_files = []
-        
-        print(f"Looking for images in: {MEDIA_DIR}")
-        
-        for f in os.listdir(MEDIA_DIR):
-            # Skip the 'posts' directory and any other directories
-            if os.path.isdir(os.path.join(MEDIA_DIR, f)):
-                print(f"Skipping directory: {f}")
-                continue
-                
-            # Check if the file has an image extension
-            if any(f.lower().endswith(ext) for ext in image_extensions):
-                image_files.append(f)
-                print(f"Found image file: {f}")
-                
-        print(f"Total image files found: {len(image_files)}")
-                
-        if image_files:
-            # Return the filename only - Django will look for it in MEDIA_ROOT
-            selected_image = random.choice(image_files)
-            print(f"Selected random profile image: {selected_image}")
-            return selected_image
-    except Exception as e:
-        print(f"Error selecting random default photo: {e}")
-    
-    # Fallback to None if no images found
-    print("No images found, returning None")
-    return None
+    """Returns a random anime character photo URL from Vercel Blob storage."""
+    default_photos = [
+        'https://3rm9kzfdjv9bixty.public.blob.vercel-storage.com/media/naruto.jpg',
+        'https://3rm9kzfdjv9bixty.public.blob.vercel-storage.com/media/tanjiro.jpg',
+        'https://3rm9kzfdjv9bixty.public.blob.vercel-storage.com/media/giyu.jpg',
+        'https://3rm9kzfdjv9bixty.public.blob.vercel-storage.com/media/jojo.jpg'
+    ]
+    return random.choice(default_photos)
 
 class SocialProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     bio = models.TextField(blank=True, default=get_random_joke)
-    # Changed to use the anime character images from media directory
-    photo = models.ImageField(upload_to='profiles/', blank=True, null=True, default=get_default_profile_photo)
+    photo = models.URLField(max_length=500, blank=True, null=True, default=get_default_profile_photo)
     
     def __str__(self):
         return self.user.username
@@ -105,7 +79,7 @@ class SocialProfile(models.Model):
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     user = models.CharField(max_length=100)
-    image = models.ImageField(upload_to="posts")
+    image = models.URLField(max_length=500)
     caption = models.TextField()
     created = models.DateTimeField(default=timezone.now)
     likes = models.IntegerField(default=0)

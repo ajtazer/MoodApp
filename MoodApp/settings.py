@@ -1,4 +1,3 @@
-
 from pathlib import Path
 import os
 # import dj_database_url
@@ -158,8 +157,12 @@ STATICFILES_DIRS = [
 # Ensure this is placed before the Media storage configuration block
 
 # Media storage configuration
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+if not DEBUG:  # Use Vercel Blob in production
+    DEFAULT_FILE_STORAGE = 'MoodApp.storage_backends.VercelBlobStorage'
+    MEDIA_URL = 'https://3rm9kzfdjv9bixty.public.blob.vercel-storage.com/media/'
+else:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # ... (rest of settings)
