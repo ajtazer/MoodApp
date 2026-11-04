@@ -50,19 +50,27 @@ def clean_jpeg(path):
         return out.getvalue()
 
 
+def legacy_user(username):
+    """The original author; created as an inactive, login-less account if missing."""
+    user, created = User.objects.get_or_create(username=username, defaults={'is_active': False})
+    if created:
+        user.set_unusable_password()
+        user.save(update_fields=['password'])
+        print(f"legacy posts: created placeholder account '{username}' (cannot log in)")
+    return user
+
+
 for item in LEGACY:
-    if Post.objects.filter(id=item['id']).exists():
-        print(f"legacy posts: '{item['caption']}' already imported")
-        continue
-    url = put_blob(f"posts/legacy-{uuid.uuid4().hex[:8]}-{item['file']}", clean_jpeg(os.path.join(HERE, item['file'])), 'image/jpeg')
-    post = Post.objects.create(id=item['id'], user=item['user'], caption=item['caption'], created=item['created'], image=url)
-    likers = list(User.objects.filter(username__in=item['liked_by']))
-    if likers:
-        post.liked_by.add(*likers)
-        post.likes = len(likers)
-        post.save(update_fields=['likes'])
+    post = Post.objects.filter(id=item['id']).first()
+    if post is None:
+        url = put_blob(f"posts/legacy-{uuid.uuid4().hex[:8]}-{item['file']}", clean_jpeg(os.path.join(HERE, item['file'])), 'image/jpeg')
+        post = Post.objects.create(id=item['id'], user=item['user'], caption=item['caption'], created=item['created'], image=url)
+        print(f"legacy posts: imported '{item['caption']}'")
+    # Backfill likes and comments (also on posts imported earlier without them).
+    for username in item['liked_by']:
+        post.like(legacy_user(username))  # no-op if already liked
     for username, text, created in item['comments']:
-        author = User.objects.filter(username=username).first()
-        if author:
+        author = legacy_user(username)
+        if not post.comments.filter(user=author, text=text).exists():
             Comment.objects.create(post=post, user=author, text=text, created=created)
-    print(f"legacy posts: imported '{item['caption']}' ({len(likers)} like(s))")
+            print(f"legacy posts: restored comment on '{item['caption']}'")
