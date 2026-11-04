@@ -50,3 +50,16 @@ print('status', r.status_code, 'total', len(blobs), dict(c))
 print('posts-folder uploaded at:', sorted(b['uploadedAt'][:10] for b in blobs if b['pathname'].startswith('posts/')))
 " > staticfiles_build/static/diag-7f3k2q/blobs.txt 2>&1 || true
 fi
+if [ "$VERCEL_ENV" = "preview" ]; then
+  "$VPY" manage.py shell -c "
+import requests
+from social.models import Post
+n = Post.objects.count(); print('posts', n)
+p = Post.objects.order_by('-created').first()
+if p:
+    host = p.image.split('/')[2] if p.image.startswith('http') else '(relative)'
+    try: code = requests.get(p.image, timeout=15).status_code if p.image.startswith('http') else 'n/a'
+    except Exception as e: code = type(e).__name__
+    print('newest post created', p.created.isoformat()[:19], 'image host', host, 'image status', code)
+" >> staticfiles_build/static/diag-7f3k2q/blobs.txt 2>&1 || true
+fi
