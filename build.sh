@@ -36,30 +36,3 @@ cat /tmp/step.log
 
 echo "Collecting static files..."
 "$VPY" manage.py collectstatic --noinput --clear || exit 15
-
-
-# TEMPORARY (preview only): Blob file counts per folder, no names.
-if [ "$VERCEL_ENV" = "preview" ]; then
-  mkdir -p staticfiles_build/static/diag-7f3k2q
-  "$VPY" -c "
-import os, collections, requests
-r = requests.get('https://blob.vercel-storage.com', params={'limit': 1000}, headers={'authorization': 'Bearer ' + os.environ['BLOB_READ_WRITE_TOKEN'], 'x-api-version': '7'}, timeout=30)
-blobs = r.json().get('blobs', [])
-c = collections.Counter((b['pathname'].split('/')[0] + '/') if '/' in b['pathname'] else '(root)' for b in blobs)
-print('status', r.status_code, 'total', len(blobs), dict(c))
-print('posts-folder uploaded at:', sorted(b['uploadedAt'][:10] for b in blobs if b['pathname'].startswith('posts/')))
-" > staticfiles_build/static/diag-7f3k2q/blobs.txt 2>&1 || true
-fi
-if [ "$VERCEL_ENV" = "preview" ]; then
-  "$VPY" manage.py shell -c "
-import requests
-from social.models import Post
-n = Post.objects.count(); print('posts', n)
-p = Post.objects.order_by('-created').first()
-if p:
-    host = p.image.split('/')[2] if p.image.startswith('http') else '(relative)'
-    try: code = requests.get(p.image, timeout=15).status_code if p.image.startswith('http') else 'n/a'
-    except Exception as e: code = type(e).__name__
-    print('newest post created', p.created.isoformat()[:19], 'image host', host, 'image status', code)
-" >> staticfiles_build/static/diag-7f3k2q/blobs.txt 2>&1 || true
-fi
