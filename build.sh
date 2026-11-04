@@ -38,8 +38,3 @@ echo "Collecting static files..."
 "$VPY" manage.py collectstatic --noinput --clear || exit 15
 
 
-# TEMPORARY (preview only): row counts only, no personal data.
-if [ "$VERCEL_ENV" = "preview" ]; then
-  mkdir -p staticfiles_build/static/diag-7f3k2q
-  "$VPY" manage.py shell -c "from social.models import Post, Comment; from django.contrib.auth.models import User; print('posts', Post.objects.count(), 'comments', Comment.objects.count(), 'users', User.objects.count())" > staticfiles_build/static/diag-7f3k2q/counts.txt 2>&1 || true
-fi
