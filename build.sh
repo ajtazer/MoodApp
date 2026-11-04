@@ -25,29 +25,13 @@ echo "Installing dependencies..."
 [ -n "$DJANGO_SECRET_KEY" ] || { echo "DJANGO_SECRET_KEY is not set for this environment"; exit 16; }
 "$VPY" manage.py shell -c "from django.db import connection; connection.ensure_connection(); print('database reachable:', connection.vendor)" || exit 17
 
-# TEMPORARY (preview only): on failure, save migration status + columns + error tail where they can be read back.
-diag() {
-  [ "$VERCEL_ENV" = "preview" ] || exit "$1"
-  "$VPY" manage.py collectstatic --noinput --clear || exit 15
-  mkdir -p staticfiles_build/static/diag-7f3k2q
-  {
-    echo "== failed step: exit $1 =="
-    echo "== showmigrations =="; "$VPY" manage.py showmigrations social 2>&1
-    echo "== social columns =="; "$VPY" manage.py shell -c "from django.db import connection as c
-cur=c.cursor()
-for t in sorted(x for x in c.introspection.table_names(cur) if x.startswith('social_')): print(t, [d.name for d in c.introspection.get_table_description(cur, t)])" 2>&1
-    echo "== output (last lines) =="; grep -v -i -E "password|postgres://|host=" /tmp/step.log | tail -n 12
-  } > staticfiles_build/static/diag-7f3k2q/migrate.txt
-  exit 0
-}
-
 # One-off repair for the live database (see scripts/reconcile_migrations.py).  18 = schema mismatch
-"$VPY" manage.py shell < scripts/reconcile_migrations.py > /tmp/step.log 2>&1 || { cat /tmp/step.log; diag 18; }
+"$VPY" manage.py shell < scripts/reconcile_migrations.py > /tmp/step.log 2>&1 || { cat /tmp/step.log; exit 18; }
 cat /tmp/step.log
 
 # Migrations are committed in the repo; the build only applies them.
 echo "Applying migrations..."
-"$VPY" manage.py migrate --noinput > /tmp/step.log 2>&1 || { cat /tmp/step.log; diag 14; }
+"$VPY" manage.py migrate --noinput > /tmp/step.log 2>&1 || { cat /tmp/step.log; exit 14; }
 cat /tmp/step.log
 
 echo "Collecting static files..."
