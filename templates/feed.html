@@ -3,44 +3,33 @@
 {% block content %}
 <div class="wrap wrap-narrow stack">
   <div class="page-head reveal">
-    <div>
-      <h1 class="page-title">Feed</h1>
-      <p class="muted">What everyone's feeling right now.</p>
+    <h1 class="page-title">Feed</h1>
+    <div class="row" style="flex-wrap:wrap">
+      <a class="btn btn-ghost" href="/">Home</a>
+      <a class="btn btn-ghost" href="/profile/">My Profile</a>
+      <a class="btn btn-ghost" href="/explore/">Explore</a>
     </div>
   </div>
 
-  <section class="card card-pad composer reveal reveal-2" aria-labelledby="composer-title">
-    <h2 id="composer-title" style="font-size:1.1rem;margin-bottom:12px">Post your mood</h2>
-    <form action="{% url 'Upload Request' %}" method="post" enctype="multipart/form-data" id="composer">{% csrf_token %}
-      <div class="mood-chips" role="group" aria-label="Pick a mood (optional)">
-        <button type="button" class="chip" aria-pressed="false" data-mood="😊 happy">😊 Happy</button>
-        <button type="button" class="chip" aria-pressed="false" data-mood="🔥 hyped">🔥 Hyped</button>
-        <button type="button" class="chip" aria-pressed="false" data-mood="😴 sleepy">😴 Sleepy</button>
-        <button type="button" class="chip" aria-pressed="false" data-mood="🌧️ meh">🌧️ Meh</button>
-        <button type="button" class="chip" aria-pressed="false" data-mood="🥰 loved">🥰 Loved</button>
-        <button type="button" class="chip" aria-pressed="false" data-mood="🤯 chaotic">🤯 Chaotic</button>
-      </div>
-      <div class="field">
-        <label class="label" for="caption">Caption</label>
-        <textarea class="textarea" id="caption" name="caption" placeholder="What's your mood today?" maxlength="1000" required></textarea>
-      </div>
+  <section class="card card-pad composer reveal reveal-2">
+    <h2 style="font-size:1.1rem;margin-bottom:12px;color:var(--accent)">Create a New Post</h2>
+    <form action="/upload/" method="post" enctype="multipart/form-data" id="composer">{% csrf_token %}
+      <label class="sr-only" for="caption">Caption</label>
+      <textarea class="textarea" id="caption" name="caption" placeholder="What's your mood today?" required></textarea>
       <label class="dropzone" id="dropzone">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
-        <span id="dropzone-text">Add a photo (tap or drop one here)</span>
-        <input type="file" name="images" accept="image/*" required aria-label="Photo">
+        <span id="dropzone-text">Choose an image</span>
+        <input type="file" name="images" accept="image/*" required aria-label="Image">
       </label>
-      <img class="preview" id="preview" alt="Selected photo preview">
-      <button class="btn btn-primary" type="submit" id="post-btn">Share mood</button>
+      <img class="preview" id="preview" alt="">
+      <button class="btn btn-primary" type="submit" id="post-btn">Post</button>
     </form>
   </section>
 
   {% for post in posts %}
     <div class="reveal">{% include 'partials/post_card.html' with detail=False %}</div>
   {% empty %}
-    <div class="card empty">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 15s1.5-2 4-2 4 2 4 2M9 9h.01M15 9h.01"/></svg>
-      <p>No posts yet. Be the first to share your mood!</p>
-    </div>
+    <div class="card empty">No posts yet. Be the first to share your mood!</div>
   {% endfor %}
 </div>
 {% endblock content %}
@@ -48,41 +37,19 @@
 {% include 'partials/like_script.html' %}
 <script>
 (function () {
-  var form = document.getElementById('composer');
-  var caption = document.getElementById('caption');
-  var chips = form.querySelectorAll('.chip');
-  var input = form.querySelector('input[type=file]');
+  var input = document.querySelector('#composer input[type=file]');
   var zone = document.getElementById('dropzone');
   var preview = document.getElementById('preview');
-  var zoneText = document.getElementById('dropzone-text');
-
-  // Mood chips prefix the caption with the chosen mood.
-  chips.forEach(function (chip) {
-    chip.addEventListener('click', function () {
-      var on = chip.getAttribute('aria-pressed') !== 'true';
-      chips.forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
-      var text = caption.value.replace(/^\S+ \w+ · /u, '');
-      if (on) { chip.setAttribute('aria-pressed', 'true'); text = chip.dataset.mood + ' · ' + text; }
-      caption.value = text;
-      caption.focus();
-    });
-  });
-
   input.addEventListener('change', function () {
     var file = input.files && input.files[0];
     if (!file) return;
-    zoneText.textContent = file.name;
+    document.getElementById('dropzone-text').textContent = file.name;
     preview.src = URL.createObjectURL(file);
     preview.classList.add('show');
   });
   ['dragenter', 'dragover'].forEach(function (ev) { zone.addEventListener(ev, function () { zone.classList.add('drag'); }); });
   ['dragleave', 'drop'].forEach(function (ev) { zone.addEventListener(ev, function () { zone.classList.remove('drag'); }); });
-
-  form.addEventListener('submit', function () {
-    var btn = document.getElementById('post-btn');
-    btn.disabled = true;
-    btn.textContent = 'Sharing…';
-  });
+  document.getElementById('composer').addEventListener('submit', function () { document.getElementById('post-btn').disabled = true; });
 })();
 </script>
 {% endblock scripts %}

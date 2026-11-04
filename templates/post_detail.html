@@ -1,21 +1,25 @@
 {% extends 'base.html' %}
-{% block title %}Post by @{{ post.user }}{% endblock title %}
+{% block title %}Post Detail{% endblock title %}
 {% block content %}
 <div class="wrap wrap-narrow stack">
-  <a class="link small reveal" href="{% url 'Feeds Page' %}">← Back to feed</a>
+  <div class="row reveal" style="flex-wrap:wrap">
+    <a class="btn btn-ghost" href="/">Home</a>
+    <a class="btn btn-ghost" href="/feed/">Feed</a>
+    <a class="btn btn-ghost" href="/profile/">My Profile</a>
+  </div>
   <div class="reveal">{% include 'partials/post_card.html' with detail=True %}</div>
 
-  <section class="card card-pad stack reveal reveal-2" aria-labelledby="comments-title">
-    <h2 id="comments-title" style="font-size:1.15rem">Comments <span class="muted">({{ comments.count }})</span></h2>
-    <form class="comment-form" action="{% url 'Add Comment' post.id %}" method="post">{% csrf_token %}
+  <section class="card card-pad stack reveal reveal-2">
+    <h2 style="font-size:1.15rem;color:var(--primary)">Comments</h2>
+    <form class="stack" action="{% url 'Add Comment' post.id %}" method="post">{% csrf_token %}
       <label class="sr-only" for="comment_text">Add a comment</label>
-      <input class="input" id="comment_text" type="text" name="comment_text" placeholder="Say something nice…" maxlength="500" required>
-      <button class="btn btn-primary" type="submit">Post</button>
+      <textarea class="textarea" id="comment_text" name="comment_text" placeholder="Add a comment..." required></textarea>
+      <button class="btn btn-primary" type="submit">Post Comment</button>
     </form>
     {% for comment in comments %}
       {% include 'partials/comment.html' %}
     {% empty %}
-      <p class="muted small">No comments yet. Be the first to comment!</p>
+      <p class="muted">No comments yet. Be the first to comment!</p>
     {% endfor %}
   </section>
 </div>

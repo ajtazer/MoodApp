@@ -1,8 +1,8 @@
 {% with uname=comment.user.username|lower photo=comment.user.socialprofile.photo %}
 <div class="comment">
-  <span class="avatar {% if uname == "tazer" %}creator{% endif %}" aria-hidden="true">{% if photo %}<img src="{{ photo }}" alt="" loading="lazy">{% else %}{{ comment.user.username|first|upper }}{% endif %}</span>
+  <span class="avatar {% if uname == "tazer" %}creator{% endif %}"><img src="{% if photo %}{{ photo }}{% else %}{{ MEDIA_URL }}naruto.jpg{% endif %}" alt="{{ comment.user.username }}'s avatar" loading="lazy"></span>
   <div class="comment-bubble">
-    <div class="comment-meta"><strong>@{{ comment.user.username }}</strong>{% if uname == "tazer" %}<span class="badge-creator">Creator</span>{% endif %}<span class="post-time">{{ comment.created|timesince }} ago</span></div>
+    <div class="comment-meta"><strong class="{% if uname == "tazer" %}creator-name{% endif %}">{{ comment.user.username }}</strong>{% if uname == "tazer" %}<span class="badge-creator">CREATOR</span>{% endif %}<span class="post-time">{{ comment.created|timesince }} ago</span></div>
     <p class="comment-text">{{ comment.text }}</p>
   </div>
 </div>

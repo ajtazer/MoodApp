@@ -1,13 +1,13 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block title %}Not found{% endblock title %}
-{% block content %}
-<div class="wrap wrap-narrow">
-  <section class="card card-pad empty reveal" style="display:flex;flex-direction:column;align-items:center;gap:14px">
-    <video src="{% static '404.mp4' %}" autoplay muted loop playsinline style="max-width:100%;border-radius:14px"></video>
-    <h1 class="page-title">Lost in your feelings?</h1>
-    <p class="muted">This page doesn't exist.</p>
-    <a class="btn btn-primary" href="/">Take me home</a>
-  </section>
-</div>
-{% endblock content %}
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Not Found</title>
+  <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/1384/1384075.png">
+  <style>html,body{margin:0;height:100%;background:#000;display:grid;place-items:center}video{max-width:100%;max-height:100vh}</style>
+</head>
+<body>
+  <video autoplay muted playsinline src="{% static '404.mp4' %}"></video>
+</body>
+</html>

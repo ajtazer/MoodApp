@@ -1,25 +1,28 @@
 {% extends 'base.html' %}
-{% block title %}Explore{% endblock title %}
+{% load static %}
+{% block title %}Explore Users{% endblock title %}
 {% block content %}
 <div class="wrap">
   <div class="page-head reveal">
-    <div>
-      <h1 class="page-title">Explore</h1>
-      <p class="muted">{{ user_profiles|length }} people on MoodApp.</p>
+    <h1 class="page-title">Explore Users</h1>
+    <div class="row" style="flex-wrap:wrap">
+      <a class="btn btn-ghost" href="/">Home</a>
+      <a class="btn btn-ghost" href="/profile/">My Profile</a>
+      <a class="btn btn-ghost" href="/feed/">Feed</a>
     </div>
   </div>
   {% if user_profiles %}
   <div class="user-grid">
     {% for profile in user_profiles %}
     <div class="card user-card reveal {% if profile.is_creator %}creator{% endif %}">
-      <span class="avatar {% if profile.is_creator %}creator{% endif %}">{% if profile.picture %}<img src="{{ profile.picture }}" alt="" loading="lazy">{% else %}{{ profile.name|first|upper }}{% endif %}</span>
-      <div class="user-name">{{ profile.name }}{% if profile.is_creator %}<span class="badge-creator">Creator</span>{% endif %}</div>
+      <span class="avatar {% if profile.is_creator %}creator{% endif %}"><img src="{% if profile.picture %}{{ profile.picture }}{% else %}{{ MEDIA_URL }}naruto.jpg{% endif %}" alt="{{ profile.name }}'s avatar" loading="lazy"></span>
+      <div class="user-name {% if profile.is_creator %}creator-name{% endif %}">{{ profile.name }}{% if profile.is_creator %}<span class="badge-creator">CREATOR</span>{% endif %}</div>
       <div class="muted small">@{{ profile.username }}</div>
     </div>
     {% endfor %}
   </div>
   {% else %}
-  <div class="card empty"><p>No users found.</p></div>
+  <div class="card empty">No users found.</div>
   {% endif %}
 </div>
 {% endblock content %}

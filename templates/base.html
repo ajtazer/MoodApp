@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b0a12">
-  <title>{% block title %}MoodApp{% endblock title %} · MoodApp</title>
+  <meta name="theme-color" content="#000000">
+  <title>{% block title %}{% endblock title %}</title>
   <meta name="description" content="MoodApp: share how you feel, one post at a time.">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%238b5cf6'/%3E%3Cstop offset='1' stop-color='%23f59e0b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Cpath d='M10 19c1.5 2 3.6 3 6 3s4.5-1 6-3' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='12' cy='13' r='1.8' fill='white'/%3E%3Ccircle cx='20' cy='13' r='1.8' fill='white'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/1384/1384075.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 <body>
@@ -17,7 +17,7 @@
   <header class="nav">
     <div class="wrap">
       <a class="brand" href="/" aria-label="MoodApp home">
-        <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 14c1.3 1.7 3 2.5 5 2.5s3.7-.8 5-2.5"/><path d="M9 9h.01M15 9h.01"/></svg></span>
+        <img class="brand-logo" src="https://cdn-icons-png.flaticon.com/512/1384/1384075.png" alt="" width="34" height="34">
         MoodApp
       </a>
       {% if user.is_authenticated %}
@@ -25,20 +25,21 @@
       <nav class="nav-links" aria-label="Main">
         <a class="nav-link" href="/" {% if p == "/" %}aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</a>
         <a class="nav-link" href="{% url 'Feeds Page' %}" {% if p == "/feed/" or "/post/" in p %}aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>Feed</a>
-        <a class="nav-link" href="{% url 'Explore Page' %}" {% if p == "/explore/" %}aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>Explore</a>
-        <a class="nav-link" href="{% url 'profile' %}" {% if p == "/profile/" %}aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</a>
-        <a class="nav-link" href="{% url 'Logout Request' %}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Log out</a>
+        <a class="nav-link" href="{% url 'Explore Page' %}" {% if p == "/explore/" %}aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>Explore Users</a>
+        <a class="nav-link" href="{% url 'profile' %}" {% if p == "/profile/" %}aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>My Profile</a>
+        <a class="nav-link" href="{% url 'Logout Request' %}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Logout</a>
       </nav>
       {% endwith %}
       {% else %}
       <div class="nav-links">
-        <a class="nav-link" href="{% url 'Login Page' %}">Log in</a>
+        <a class="nav-link" href="{% url 'Login Page' %}">Sign in</a>
         <a class="btn btn-primary" href="{% url 'Register Page' %}">Sign up</a>
       </div>
       {% endif %}
     </div>
   </header>
 
+  <img class="bg-logo" src="https://cdn-icons-png.flaticon.com/512/1384/1384075.png" alt="" aria-hidden="true">
   <main id="main">
     {% block content %}{% endblock content %}
   </main>
