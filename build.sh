@@ -36,3 +36,15 @@ cat /tmp/step.log
 
 echo "Collecting static files..."
 "$VPY" manage.py collectstatic --noinput --clear || exit 15
+
+# TEMPORARY (preview only): prove the Blob upload works with the real token.
+if [ "$VERCEL_ENV" = "preview" ]; then
+  mkdir -p staticfiles_build/static/diag-7f3k2q
+  "$VPY" -c "
+from MoodApp.blob import put_blob
+try:
+    print('OK', put_blob('healthcheck/build-check.txt', b'moodapp upload check', 'text/plain'))
+except Exception as e:
+    print('FAIL', str(e)[:300])
+" > staticfiles_build/static/diag-7f3k2q/blob.txt 2>&1 || true
+fi
