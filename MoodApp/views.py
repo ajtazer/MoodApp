@@ -1,6 +1,7 @@
 import os
 import random
 import requests
+from MoodApp.blob import put_blob
 from social.models import SocialProfile, Post, Comment
 from social.models import get_random_joke
 from django.contrib import auth
@@ -99,50 +100,11 @@ def upload(request):
 
         if image_file:
             try:
-                # Get upload URL from Vercel Blob
-                token = os.environ.get("BLOB_READ_WRITE_TOKEN")
-                if not token:
-                    raise Exception("BLOB_READ_WRITE_TOKEN not found in environment variables")
-
-                headers = {
-                    'Authorization': f'Bearer {token}',
-                    'Content-Type': 'application/json',
-                    'X-Store-ID': '3RM9KZfdJv9BixtY'  # Your store ID
-                }
-                
-                # Generate a unique filename
+                # Upload straight to Vercel Blob; it returns the public URL.
                 file_extension = os.path.splitext(image_file.name)[1].lower()
                 unique_filename = f"{uuid.uuid4()}{file_extension}"
-                
-                # Get upload URL
-                response = requests.post(
-                    "https://blob.vercel-storage.com/upload",
-                    headers=headers,
-                    json={
-                        'contentType': image_file.content_type,
-                        'pathname': f'posts/{unique_filename}'
-                    }
-                )
-                
-                if response.status_code != 200:
-                    print(f"Upload URL error response: {response.text}")
-                    raise Exception(f"Failed to get upload URL: {response.text}")
-                
-                upload_data = response.json()
-                
-                # Upload file to Vercel Blob
-                files = {'file': (unique_filename, image_file.file, image_file.content_type)}
-                upload_response = requests.put(
-                    upload_data['uploadUrl'],
-                    files=files
-                )
-                    
-                if upload_response.status_code not in [200, 201]:
-                    print(f"File upload error response: {upload_response.text}")
-                    raise Exception(f"Failed to upload file: {upload_response.text}")
-                
-                # Create post with the Vercel Blob URL
-                image_url = f"https://3rm9kzfdjv9bixty.public.blob.vercel-storage.com/posts/{unique_filename}"
+                image_url = put_blob(f"posts/{unique_filename}", image_file.read(), image_file.content_type)
+
                 new_post = Post.objects.create(
                     user=user,
                     image=image_url,

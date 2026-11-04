@@ -47,15 +47,12 @@ def get_random_joke():
     ]
     return random.choice(jokes)
 
+DEFAULT_AVATARS = ['naruto.jpg', 'tanjiro.jpg', 'giyu.jpg', 'jojo.jpg']
+
+
 def get_default_profile_photo():
-    """Returns a random anime character photo URL from Vercel Blob storage."""
-    default_photos = [
-        'https://3rm9kzfdjv9bixty.public.blob.vercel-storage.com/media/naruto.jpg',
-        'https://3rm9kzfdjv9bixty.public.blob.vercel-storage.com/media/tanjiro.jpg',
-        'https://3rm9kzfdjv9bixty.public.blob.vercel-storage.com/media/giyu.jpg',
-        'https://3rm9kzfdjv9bixty.public.blob.vercel-storage.com/media/jojo.jpg'
-    ]
-    return random.choice(default_photos)
+    """Returns a random anime character photo, served from the app's static files."""
+    return '/static/avatars/' + random.choice(DEFAULT_AVATARS)
 
 class SocialProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

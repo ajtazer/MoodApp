@@ -15,7 +15,7 @@
   <div class="user-grid">
     {% for profile in user_profiles %}
     <div class="card user-card reveal {% if profile.is_creator %}creator{% endif %}">
-      <span class="avatar {% if profile.is_creator %}creator{% endif %}"><img src="{% if profile.picture %}{{ profile.picture }}{% else %}{{ MEDIA_URL }}naruto.jpg{% endif %}" alt="{{ profile.name }}'s avatar" loading="lazy"></span>
+      <span class="avatar {% if profile.is_creator %}creator{% endif %}"><img src="{% if profile.picture %}{{ profile.picture }}{% else %}{% static 'avatars/naruto.jpg' %}{% endif %}" alt="{{ profile.name }}'s avatar" loading="lazy"></span>
       <div class="user-name {% if profile.is_creator %}creator-name{% endif %}">{{ profile.name }}{% if profile.is_creator %}<span class="badge-creator">CREATOR</span>{% endif %}</div>
       <div class="muted small">@{{ profile.username }}</div>
     </div>

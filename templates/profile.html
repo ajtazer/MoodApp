@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Profile{% endblock title %}
 {% block content %}
 <div class="wrap wrap-narrow">
   <section class="card reveal {% if is_creator %}creator{% endif %}">
     <div class="profile-cover" aria-hidden="true"></div>
     <div class="profile-body">
-      <span class="avatar avatar-lg {% if is_creator %}creator{% endif %}"><img src="{% if picture %}{{ picture }}{% else %}{{ MEDIA_URL }}naruto.jpg{% endif %}" alt="Profile Photo"></span>
+      <span class="avatar avatar-lg {% if is_creator %}creator{% endif %}"><img src="{% if picture %}{{ picture }}{% else %}{% static 'avatars/naruto.jpg' %}{% endif %}" alt="Profile Photo"></span>
       <h1 class="page-title {% if is_creator %}creator-name{% else %}gradient-text{% endif %}" style="text-transform:uppercase">Welcome, {{ name|upper }}{% if is_creator %} <span class="badge-creator">CREATOR</span>{% endif %}!</h1>
       <a class="btn btn-primary" href="/">Home</a>
       <p class="bio" style="color:var(--accent)">Bio: {{ bio }}</p>
