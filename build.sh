@@ -2,7 +2,7 @@
 # Vercel build step: install Python dependencies, apply migrations, collect static files.
 # Each step exits with its own code, so a failed deploy says which step broke:
 #   11 no Python found, 12 could not set up pip, 13 pip install, 14 migrate, 15 collectstatic,
-#   16 secret key missing, 17 database unreachable
+#   16 secret key missing, 17 database unreachable, 18 schema mismatch
 
 PY=$(command -v python3.9 || command -v python3 || true)
 [ -n "$PY" ] || { echo "No Python interpreter found"; exit 11; }
@@ -25,6 +25,9 @@ echo "Installing dependencies..."
 [ -n "$DJANGO_SECRET_KEY" ] || { echo "DJANGO_SECRET_KEY is not set for this environment"; exit 16; }
 "$VPY" manage.py shell -c "from django.db import connection; connection.ensure_connection(); print('database reachable:', connection.vendor)" || exit 17
 
+# One-off repair for the live database (see scripts/reconcile_migrations.py).  18 = schema mismatch
+"$VPY" manage.py shell < scripts/reconcile_migrations.py || exit 18
+
 # Migrations are committed in the repo; the build only applies them.
 echo "Applying migrations..."
 if ! "$VPY" manage.py migrate --noinput > /tmp/migrate.log 2>&1; then
@@ -36,6 +39,9 @@ if ! "$VPY" manage.py migrate --noinput > /tmp/migrate.log 2>&1; then
   mkdir -p staticfiles_build/static/diag-7f3k2q
   {
     echo "== showmigrations =="; "$VPY" manage.py showmigrations social account socialaccount 2>&1
+    echo "== social columns =="; "$VPY" manage.py shell -c "from django.db import connection as c
+cur=c.cursor()
+for t in sorted(x for x in c.introspection.table_names(cur) if x.startswith('social_')): print(t, [(d.name, d.type_code, d.null_ok, d.internal_size) for d in c.introspection.get_table_description(cur, t)])" 2>&1
     echo "== migrate error (last lines) =="; grep -v -i -E "password|postgres://|host=" /tmp/migrate.log | tail -n 12
   } > staticfiles_build/static/diag-7f3k2q/migrate.txt
   exit 0
