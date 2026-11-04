@@ -24,3 +24,9 @@ node_modules
 /bin
 /lib
 /.wrangler
+
+# Local-only files that must never be committed
+db.sqlite3
+media/posts/
+pyvenv.cfg
+.env.local

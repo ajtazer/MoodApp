@@ -1,21 +1,40 @@
 from pathlib import Path
 import os
-# import dj_database_url
-from decouple import config
+import dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
+# Read a local .env file if there is one (never commit it; see .env.example).
+dotenv.load_dotenv(BASE_DIR / '.env')
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w0^o9*&%6^rr-9@q9h_2yyp+x(-y!9jtnwsa(i&l%vqddy-cm6'
+# Debug is off unless DEBUG_FLAG=True is set (do that only on your own machine).
+DEBUG = os.environ.get('DEBUG_FLAG', 'False') == 'True'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if os.environ.get('DEBUG_FLAG', 'True') == 'True' else False
+# The secret key comes from the environment. A throwaway key is used only for
+# local development with DEBUG on; production refuses to start without one.
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'django-insecure-local-development-only'
+    else:
+        raise ImproperlyConfigured(
+            'DJANGO_SECRET_KEY is not set. Add it to the environment (Vercel: Settings > Environment Variables).'
+        )
 
-ALLOWED_HOSTS = ['*']
+# Comma-separated host names. ".vercel.app" covers themoodapp.vercel.app and preview deployments.
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get('DJANGO_ALLOWED_HOSTS', '.vercel.app,localhost,127.0.0.1').split(',')
+    if host.strip()
+]
+
+# The site is served over HTTPS on Vercel, so only send cookies over HTTPS there.
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition
@@ -71,10 +90,6 @@ WSGI_APPLICATION = 'MoodApp.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
-import dotenv
-
-dotenv.load_dotenv()
 
 # Check if running on Vercel
 IS_VERCEL = os.environ.get('VERCEL', False)
