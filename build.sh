@@ -2,7 +2,7 @@
 # Vercel build step: install Python dependencies, apply migrations, collect static files.
 # Each step exits with its own code, so a failed deploy says which step broke:
 #   11 no Python found, 12 could not set up pip, 13 pip install, 14 migrate, 15 collectstatic,
-#   16 secret key missing, 17 database unreachable, 18 schema mismatch
+#   16 secret key missing, 17 database unreachable, 18 schema mismatch, 19 legacy post import
 
 PY=$(command -v python3.9 || command -v python3 || true)
 [ -n "$PY" ] || { echo "No Python interpreter found"; exit 11; }
@@ -33,6 +33,9 @@ cat /tmp/step.log
 echo "Applying migrations..."
 "$VPY" manage.py migrate --noinput > /tmp/step.log 2>&1 || { cat /tmp/step.log; exit 14; }
 cat /tmp/step.log
+
+# Bring the two old local posts into the live feed (skips them once imported).  19 = import failed
+"$VPY" manage.py shell < scripts/import_legacy_posts.py || exit 19
 
 echo "Collecting static files..."
 "$VPY" manage.py collectstatic --noinput --clear || exit 15
