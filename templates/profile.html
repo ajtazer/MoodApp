@@ -1,82 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-    <title>Profile</title>
-    <link rel="icon" type="image/x-icon" href="{% static '404.gif' %}">
-    <style>
-        .text-center {
-            color: #28f19c;
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            text-align: center;
-        }
-
-        .text-center-name {
-            color: #28f19c;
-            font-size: 50px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-align: center;
-        }
-        .text-center-name.creator {
-            color: gold;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 1px 1px 2px black; /* Optional: add shadow for better visibility */
-        }
-        .rounded-circle {
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid #04a5f4;
-        }
-        .rounded-circle:hover {
-            border: 3px solid #28f19c;
-            cursor: pointer;
-            }
-        .creator-tag {
-            color: gold;
-            font-weight: bold;
-            margin-left: 10px;
-            font-size: 12px;
-            vertical-align: super;
-        }
-    </style>
-</head>
-<body>
-<main class="container">
-    <img class="backgound_img" src="{% static '404.gif' %}" alt="" />
-    <div class="content">
-        {% for x in social_profile %}
-        {% if user == x.user %}
-        <h1 class="text-center-name {% if is_creator %}creator{% endif %}">Welcome, {{ x.user | upper }}{% if is_creator %}<span class="creator-tag">CREATOR</span>{% endif %}!</h1>
-        <br><br>
-        <img src="{{ x.photo.url }}" alt="Profile Photo" class="rounded-circle mx-auto d-block" style="max-width: 300px;">
-        <br><br>
-        <h1 class="text-center">Bio: {{ x.bio }}</h1>
-        {% endif %}
-        {% endfor %}
-        
-        {% if social_profile %}
-        {% else %}
-        <h1 class="text-center-name {% if is_creator %}creator{% endif %}">Welcome, {{ name | upper }}{% if is_creator %}<span class="creator-tag">CREATOR</span>{% endif %}!</h1>
-        <br><br>
-        <img src="{% if picture %}{{ picture }}{% else %}{{ MEDIA_URL }}naruto.jpg{% endif %}" alt="Profile Photo" class="rounded-circle mx-auto d-block" style="max-width: 300px;">
-        <br>
-        <button class="next_btn" type='submit' onclick="window.location.href = '/';">Home</button>
-        <br>
-        <h1 class="text-center">Bio: {{ bio }}</h1>
-        {% endif %}
-        
-        <p class="project_by">Developed by <span onclick="window.location='https://www.instagram.com/anujrawatazer/'">TAZER</span></p>
+{% extends 'base.html' %}
+{% block title %}{{ name }}{% endblock title %}
+{% block content %}
+<div class="wrap wrap-narrow">
+  <section class="card reveal {% if is_creator %}creator{% endif %}">
+    <div class="profile-cover" aria-hidden="true"></div>
+    <div class="profile-body">
+      <span class="avatar avatar-lg {% if is_creator %}creator{% endif %}">{% if picture %}<img src="{{ picture }}" alt="{{ name }}'s profile photo">{% else %}{{ name|first|upper }}{% endif %}</span>
+      <div>
+        <h1 class="page-title">{{ name }}</h1>
+        <div class="row" style="justify-content:center;margin-top:6px">
+          <span class="muted">@{{ user.username }}</span>
+          {% if is_creator %}<span class="badge-creator"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.5 7 .9-5.1 4.8 1.3 7L12 17.8 5.8 21.2l1.3-7L2 9.4l7-.9z"/></svg>Creator</span>{% endif %}
+        </div>
+      </div>
+      {% if bio %}<p class="bio">{{ bio }}</p>{% endif %}
+      <div class="row" style="flex-wrap:wrap;justify-content:center">
+        <a class="btn btn-primary" href="{% url 'Feeds Page' %}">Post a mood</a>
+        <a class="btn btn-ghost" href="{% url 'Explore Page' %}">Explore people</a>
+      </div>
     </div>
-</main>
-</body>
-</html>
+  </section>
+</div>
+{% endblock content %}

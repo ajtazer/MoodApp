@@ -1,29 +1,34 @@
 {% extends 'base.html' %}
 {% load socialaccount %}
-{% block title %}Sign Up{% endblock title %}
-{% block form %}
-{% if error %}
-<h1 class="main_title">{{error}}</h1>
-{% else %}
-<h1 class="main_title">Sign Up to MoodApp</h1>
-{% endif %}
-<a href="{% provider_login_url 'google' %}"><div class="google_button">
-  <img src="https://cdn-icons-png.flaticon.com/512/1000/1000777.png" alt="" class="google_logo" />
-  <p class="google_text">Sign Up with Google</p>
-</div></a>
-<div class="or">
-  <hr />
-  <p>or</p>
-  <hr />
+{% block title %}Sign up{% endblock title %}
+{% block content %}
+<div class="wrap">
+  <section class="card card-pad auth stack reveal">
+    <div>
+      <h1>Join MoodApp</h1>
+      <p class="muted" style="margin-top:6px">Takes ten seconds. Feelings optional.</p>
+    </div>
+    {% if error %}
+    <div class="alert" role="alert"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>{{ error }}</div>
+    {% endif %}
+    {% include 'partials/google_button.html' with label="Sign up with Google" %}
+    <div class="divider">or pick a username</div>
+    <form method="post" class="stack">{% csrf_token %}
+      <div class="field">
+        <label class="label" for="username">Username</label>
+        <input class="input" id="username" type="text" name="username" maxlength="40" autocomplete="username" required autofocus>
+      </div>
+      <div class="field">
+        <label class="label" for="password1">Password</label>
+        <input class="input" id="password1" type="password" name="password1" maxlength="40" autocomplete="new-password" required>
+      </div>
+      <div class="field">
+        <label class="label" for="password2">Repeat password</label>
+        <input class="input" id="password2" type="password" name="password2" maxlength="40" autocomplete="new-password" required>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit">Create account</button>
+    </form>
+    <p class="auth-foot">Already have an account? <a href="{% url 'Login Page' %}">Log in</a></p>
+  </section>
 </div>
-<form method="post">{% csrf_token %}
-<input type="text" maxlength="40" name='username' placeholder="Username" class="other_user" />
-<input type="password" maxlength="40" name='password1' placeholder="Password" class="other_user" />
-<input type="password" maxlength="40" name='password2' placeholder="Repeat Password" class="other_user" />
-<button class="next_btn" type='submit'>Sign up</button>
-</form>
-<a href="mailto:tazeryeah@gmail.com?subject=I%20want%20to%20reset%20my%20Password%20for%20MoodApp&body=my%20Username%20is%20%3A%20%0Amy%20Email%20is%20%3A%20">
-  <p class="forgot_pwd">Forgot Password?</p>
-</a>
-<p class="sign_up">Already have an account? <a href='/signin'><span>Log in</span></a></p>
-{% endblock form %}
+{% endblock content %}

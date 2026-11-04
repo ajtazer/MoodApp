@@ -1,0 +1,9 @@
+{% with uname=comment.user.username|lower photo=comment.user.socialprofile.photo %}
+<div class="comment">
+  <span class="avatar {% if uname == "tazer" %}creator{% endif %}" aria-hidden="true">{% if photo %}<img src="{{ photo }}" alt="" loading="lazy">{% else %}{{ comment.user.username|first|upper }}{% endif %}</span>
+  <div class="comment-bubble">
+    <div class="comment-meta"><strong>@{{ comment.user.username }}</strong>{% if uname == "tazer" %}<span class="badge-creator">Creator</span>{% endif %}<span class="post-time">{{ comment.created|timesince }} ago</span></div>
+    <p class="comment-text">{{ comment.text }}</p>
+  </div>
+</div>
+{% endwith %}

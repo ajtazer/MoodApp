@@ -1,9 +1,13 @@
-<head>
-    {% load static %}
-</head>
-<title>
-    Not Found
-</title>
-<video autoplay="autoplay">
-<source src="{% static '404.mp4' %}" type="video/mp4" />
-</video>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Not found{% endblock title %}
+{% block content %}
+<div class="wrap wrap-narrow">
+  <section class="card card-pad empty reveal" style="display:flex;flex-direction:column;align-items:center;gap:14px">
+    <video src="{% static '404.mp4' %}" autoplay muted loop playsinline style="max-width:100%;border-radius:14px"></video>
+    <h1 class="page-title">Lost in your feelings?</h1>
+    <p class="muted">This page doesn't exist.</p>
+    <a class="btn btn-primary" href="/">Take me home</a>
+  </section>
+</div>
+{% endblock content %}
