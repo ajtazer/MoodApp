@@ -1,7 +1,8 @@
 #!/bin/bash
 # Vercel build step: install Python dependencies, apply migrations, collect static files.
 # Each step exits with its own code, so a failed deploy says which step broke:
-#   11 no Python found, 12 could not set up pip, 13 pip install, 14 migrate, 15 collectstatic
+#   11 no Python found, 12 could not set up pip, 13 pip install, 14 migrate, 15 collectstatic,
+#   16 secret key missing, 17 database unreachable
 
 PY=$(command -v python3.9 || command -v python3 || true)
 [ -n "$PY" ] || { echo "No Python interpreter found"; exit 11; }
@@ -19,6 +20,10 @@ fi
 
 echo "Installing dependencies..."
 "$VPY" -m pip install --quiet -r requirements.txt || exit 13
+
+#   16 DJANGO_SECRET_KEY missing at build time, 17 cannot connect to the database
+[ -n "$DJANGO_SECRET_KEY" ] || { echo "DJANGO_SECRET_KEY is not set for this environment"; exit 16; }
+"$VPY" manage.py shell -c "from django.db import connection; connection.ensure_connection(); print('database reachable:', connection.vendor)" || exit 17
 
 # Migrations are committed in the repo; the build only applies them.
 echo "Applying migrations..."
