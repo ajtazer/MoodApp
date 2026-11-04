@@ -27,7 +27,19 @@ echo "Installing dependencies..."
 
 # Migrations are committed in the repo; the build only applies them.
 echo "Applying migrations..."
-"$VPY" manage.py migrate --noinput || exit 14
+if ! "$VPY" manage.py migrate --noinput > /tmp/migrate.log 2>&1; then
+  cat /tmp/migrate.log
+  if [ "$VERCEL_ENV" != "preview" ]; then exit 14; fi
+  # TEMPORARY (preview only): save migration status + the error's last lines where they can be read back.
+  echo "Collecting static files..."
+  "$VPY" manage.py collectstatic --noinput --clear || exit 15
+  mkdir -p staticfiles_build/static/diag-7f3k2q
+  {
+    echo "== showmigrations =="; "$VPY" manage.py showmigrations social account socialaccount 2>&1
+    echo "== migrate error (last lines) =="; grep -v -i -E "password|postgres://|host=" /tmp/migrate.log | tail -n 12
+  } > staticfiles_build/static/diag-7f3k2q/migrate.txt
+  exit 0
+fi
 
 echo "Collecting static files..."
 "$VPY" manage.py collectstatic --noinput --clear || exit 15
